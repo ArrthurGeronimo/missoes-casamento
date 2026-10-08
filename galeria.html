@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6b7a45">
+  <title>Galeria · Arthur &amp; Fernanda</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%236b7a45'/><circle cx='50' cy='50' r='7' fill='%23c2a35a'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=1">
+  <style>
+    main { max-width: 1100px; }
+    .filtros {
+      position: sticky; top: 0; z-index: 5; display: flex; gap: 8px; overflow-x: auto;
+      padding: 12px 0; margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+      background: rgba(251, 248, 239, .94); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      scrollbar-width: none;
+    }
+    .filtros::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: none; border: 1.5px solid var(--oliva); background: transparent; color: var(--oliva-escuro);
+      border-radius: 99px; padding: 6px 14px; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip[aria-pressed=true] { background: var(--oliva); color: #fff; }
+    .chip small { font-weight: 600; opacity: .75; }
+    .secao h2 { margin: 22px 0 10px; font-size: 24px; color: var(--oliva-escuro); }
+    .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(30vw, 160px), 1fr)); gap: 6px; }
+    .foto {
+      position: relative; padding: 0; border: 0; border-radius: 10px; overflow: hidden; cursor: pointer;
+      aspect-ratio: 1; background: var(--pergaminho);
+    }
+    .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .foto .quem {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 6px 4px;
+      background: linear-gradient(transparent, rgba(0,0,0,.55)); color: #fff;
+      font-size: 14px; font-weight: 700; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .foto .play {
+      position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,.5); color: #fff;
+      border-radius: 99px; padding: 2px 8px; font-size: 13px;
+    }
+    .vazio { text-align: center; margin: 40px 0; font-size: 19px; font-style: italic; color: var(--oliva); }
+    .atualizado { text-align: center; font-size: 14px; color: var(--oliva); margin: 18px 0 0; }
+    .lightbox {
+      position: fixed; inset: 0; z-index: 40; background: rgba(20, 22, 12, .94);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px;
+    }
+    .lightbox img, .lightbox video { max-width: 100%; max-height: calc(100vh - 140px); border-radius: 8px; background: #000; }
+    .lightbox-info { color: #fff; margin-top: 12px; text-align: center; font-size: 17px; }
+    .lightbox-acoes { display: flex; gap: 10px; margin-top: 10px; }
+    .lightbox-acoes a, .lightbox-acoes button {
+      border: 1.5px solid #fff; background: transparent; color: #fff; border-radius: 99px;
+      padding: 8px 16px; font: inherit; font-size: 16px; font-weight: 700; text-decoration: none; cursor: pointer;
+    }
+    body { padding-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <header class="topo">
+    <p class="sobretitulo">Galeria da festa</p>
+    <h1 id="noivos" class="noivos">Arthur &amp; Fernanda</h1>
+    <p id="data" class="data"></p>
+    <p class="saudacao"><a href="./" class="link">← Voltar às missões</a></p>
+  </header>
+  <main>
+    <nav id="filtros" class="filtros" aria-label="Filtrar por missão"></nav>
+    <div id="conteudo"><p class="vazio">Carregando as fotos…</p></div>
+    <p id="atualizado" class="atualizado"></p>
+  </main>
+
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true">
+    <div id="lightbox-midia"></div>
+    <p id="lightbox-info" class="lightbox-info"></p>
+    <div class="lightbox-acoes">
+      <a id="lightbox-baixar" href="#" download>Baixar</a>
+      <button type="button" id="lightbox-fechar">Fechar</button>
+    </div>
+  </div>
+
+  <script src="config.js?v=1"></script>
+  <script>
+  (function () {
+    "use strict";
+    var C = window.CONFIG;
+    var $ = function (s) { return document.querySelector(s); };
+    var BASE = "https://res.cloudinary.com/" + C.cloudName + "/";
+    var mapaCores = { oliva: "--oliva", olivaEscuro: "--oliva-escuro", folha: "--folha", creme: "--creme",
+      pergaminho: "--pergaminho", dourado: "--dourado", texto: "--texto" };
+    Object.keys(mapaCores).forEach(function (k) {
+      if (C.cores && C.cores[k]) document.documentElement.style.setProperty(mapaCores[k], C.cores[k]);
+    });
+    $("#noivos").textContent = C.noivos;
+    $("#data").textContent = C.data;
+
+    // Grupos na ordem das missões + "livres" no fim.
+    var grupos = C.missoes.map(function (m, i) { return { id: m.id, titulo: (i + 1) + ". " + m.titulo }; });
+    grupos.push({ id: "livres", titulo: "Momentos livres" });
+    var idsValidos = grupos.map(function (g) { return g.id; });
+    var filtro = "todas";
+    var itens = [];
+
+    // A lista por tag é pública (Settings → Security → "Resource list" liberado) e fica em cache ~60 s.
+    function listar(tipo) {
+      return fetch(BASE + tipo + "/list/" + encodeURIComponent(C.tagGeral) + ".json?m=" + Math.floor(Date.now() / 60000))
+        .then(function (r) {
+          if (r.status === 404) return { resources: [] }; // nenhuma foto com essa tag ainda
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (j) {
+          return (j.resources || []).map(function (res) {
+            var ctx = (res.context && res.context.custom) || {};
+            return { tipo: tipo, id: res.public_id, formato: res.format, em: res.created_at,
+              nome: ctx.convidado || "", grupo: idsValidos.indexOf(ctx.missao) >= 0 ? ctx.missao : "livres" };
+          });
+        });
+    }
+
+    function thumb(it) {
+      return it.tipo === "video"
+        ? BASE + "video/upload/c_fill,w_400,h_400,so_0,q_auto/" + it.id + ".jpg"
+        : BASE + "image/upload/c_fill,g_auto,w_400,h_400,q_auto,f_auto/" + it.id;
+    }
+
+    function carregar() {
+      Promise.all([listar("image"), listar("video").catch(function () { return []; })])
+        .then(function (r) {
+          itens = r[0].concat(r[1]).sort(function (a, b) { return a.em < b.em ? 1 : -1; });
+          render();
+          $("#atualizado").textContent = itens.length + (itens.length === 1 ? " registro" : " registros") +
+            " · atualiza sozinho a cada minuto";
+        })
+        .catch(function () {
+          if (!itens.length) $("#conteudo").innerHTML = '<p class="vazio">Não consegui carregar as fotos agora. Tentaremos de novo em instantes.</p>';
+        });
+    }
+
+    function render() {
+      var porGrupo = {};
+      itens.forEach(function (it) { (porGrupo[it.grupo] = porGrupo[it.grupo] || []).push(it); });
+
+      var nav = $("#filtros");
+      nav.innerHTML = "";
+      [{ id: "todas", titulo: "Todas" }].concat(grupos).forEach(function (g) {
+        var n = g.id === "todas" ? itens.length : (porGrupo[g.id] || []).length;
+        var b = document.createElement("button");
+        b.className = "chip"; b.type = "button";
+        b.setAttribute("aria-pressed", String(filtro === g.id));
+        b.innerHTML = "<span></span> <small>" + n + "</small>";
+        b.firstChild.textContent = g.titulo.replace(/^\d+\. /, "");
+        b.onclick = function () { filtro = g.id; render(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+        nav.appendChild(b);
+      });
+
+      var cont = $("#conteudo");
+      cont.innerHTML = "";
+      if (!itens.length) { cont.innerHTML = '<p class="vazio">Ainda não há fotos. Seja o primeiro! 🌿</p>'; return; }
+      grupos.forEach(function (g) {
+        if (filtro !== "todas" && filtro !== g.id) return;
+        var lista = porGrupo[g.id] || [];
+        if (!lista.length && filtro === "todas") return;
+        var sec = document.createElement("section");
+        sec.className = "secao";
+        var h = document.createElement("h2"); h.textContent = g.titulo; sec.appendChild(h);
+        if (!lista.length) {
+          var p = document.createElement("p"); p.className = "vazio"; p.textContent = "Nenhuma foto nesta missão ainda.";
+          sec.appendChild(p);
+        }
+        var grade = document.createElement("div"); grade.className = "grade";
+        lista.forEach(function (it) {
+          var b = document.createElement("button");
+          b.className = "foto"; b.type = "button";
+          var img = new Image(); img.loading = "lazy"; img.alt = "Foto de " + (it.nome || "convidado"); img.src = thumb(it);
+          b.appendChild(img);
+          if (it.tipo === "video") { var pl = document.createElement("span"); pl.className = "play"; pl.textContent = "▶ vídeo"; b.appendChild(pl); }
+          if (it.nome) { var q = document.createElement("span"); q.className = "quem"; q.textContent = it.nome; b.appendChild(q); }
+          b.onclick = function () { abrir(it); };
+          grade.appendChild(b);
+        });
+        sec.appendChild(grade);
+        cont.appendChild(sec);
+      });
+    }
+
+    function abrir(it) {
+      var m = $("#lightbox-midia");
+      m.innerHTML = "";
+      if (it.tipo === "video") {
+        var v = document.createElement("video");
+        v.controls = true; v.playsInline = true; v.preload = "metadata";
+        v.poster = BASE + "video/upload/so_0,w_1000,q_auto/" + it.id + ".jpg";
+        // Primeiro tenta MP4 otimizado (toca em todo celular); se falhar, o arquivo original.
+        [BASE + "video/upload/q_auto,vc_auto/" + it.id + ".mp4", BASE + "video/upload/" + it.id + "." + it.formato]
+          .forEach(function (src) { var s = document.createElement("source"); s.src = src; v.appendChild(s); });
+        m.appendChild(v);
+        $("#lightbox-baixar").href = BASE + "video/upload/fl_attachment/" + it.id + "." + it.formato;
+      } else {
+        var img = new Image();
+        img.alt = "Foto de " + (it.nome || "convidado");
+        img.src = BASE + "image/upload/c_limit,w_1600,q_auto,f_auto/" + it.id;
+        m.appendChild(img);
+        $("#lightbox-baixar").href = BASE + "image/upload/fl_attachment/" + it.id + "." + it.formato;
+      }
+      var g = grupos.filter(function (x) { return x.id === it.grupo; })[0];
+      $("#lightbox-info").textContent = (it.nome ? "Enviada por " + it.nome : "") + (g ? " · " + g.titulo.replace(/^\d+\. /, "") : "");
+      $("#lightbox").hidden = false;
+    }
+    function fechar() { $("#lightbox").hidden = true; $("#lightbox-midia").innerHTML = ""; }
+    $("#lightbox-fechar").onclick = fechar;
+    $("#lightbox").addEventListener("click", function (e) { if (e.target.id === "lightbox") fechar(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") fechar(); });
+
+    carregar();
+    setInterval(function () { if (document.visibilityState === "visible") carregar(); }, 60000);
+  })();
+  </script>
+</body>
+</html>

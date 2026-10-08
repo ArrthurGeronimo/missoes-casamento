@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6b7a45">
+  <title>Missões · Arthur &amp; Fernanda</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%236b7a45'/><circle cx='50' cy='50' r='7' fill='%23c2a35a'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+  <header class="topo">
+    <svg class="porta" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="56" fill="none" stroke="currentColor" stroke-width="2" opacity=".35"/>
+      <circle cx="60" cy="60" r="48" class="porta-madeira"/>
+      <g stroke="rgba(0,0,0,.18)" stroke-width="2">
+        <line x1="36" y1="18" x2="36" y2="102"/><line x1="52" y1="12" x2="52" y2="108"/>
+        <line x1="68" y1="12" x2="68" y2="108"/><line x1="84" y1="18" x2="84" y2="102"/>
+      </g>
+      <circle cx="60" cy="60" r="48" fill="none" class="porta-aro" stroke-width="5"/>
+      <circle cx="60" cy="60" r="6.5" class="porta-macaneta"/>
+      <path d="M8 74c10-4 18 2 22 10M112 74c-10-4-18 2-22 10" fill="none" class="porta-folha" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M14 70c4 0 7 3 7 7-4 0-7-3-7-7zM24 78c4 0 7 3 7 7-4 0-7-3-7-7zM106 70c-4 0-7 3-7 7 4 0 7-3 7-7zM96 78c-4 0-7 3-7 7 4 0 7-3 7-7z" class="porta-folha-fill"/>
+    </svg>
+    <p class="sobretitulo">Uma festa muito esperada</p>
+    <h1 id="noivos" class="noivos">Arthur &amp; Fernanda</h1>
+    <p id="data" class="data"></p>
+    <p id="chamada" class="chamada"></p>
+    <p class="saudacao">Olá, <strong id="saudacao-nome">convidado</strong>! <button type="button" id="trocar-nome" class="link">(não é você?)</button></p>
+  </header>
+
+  <main>
+    <section class="painel-progresso" aria-label="Progresso">
+      <p id="contador" class="contador">0 de 8 missões</p>
+      <div class="barra barra-geral"><div id="progresso-geral" class="barra-fill"></div></div>
+    </section>
+
+    <ol id="missoes" class="missoes"></ol>
+
+    <section class="card livres">
+      <div class="card-topo">
+        <span class="card-num">✦</span>
+        <h3 class="card-titulo">Momentos livres</h3>
+        <span class="card-emoji" aria-hidden="true">🎥</span>
+      </div>
+      <p class="livres-desc">Mais fotos e vídeos da festa? Envie quantos quiser (vídeos de até ~1 minuto).</p>
+      <p id="livres-status" class="card-status ok" aria-live="polite"></p>
+      <label class="botao botao-secundario">
+        <input type="file" accept="image/*,video/*" multiple id="input-livres">
+        <span>＋ Enviar fotos e vídeos</span>
+      </label>
+    </section>
+
+    <p class="galeria-link"><a href="galeria.html">🌿 Ver as fotos de todos os convidados</a></p>
+  </main>
+
+  <footer class="rodape"><span id="rodape-texto"></span></footer>
+
+  <div id="banner" class="banner" hidden role="status">
+    <span id="banner-texto"></span>
+    <button type="button" id="banner-tentar" class="banner-botao" hidden>Tentar agora</button>
+  </div>
+
+  <div id="modal-nome" class="modal" hidden>
+    <form id="form-nome" class="modal-caixa">
+      <p class="sobretitulo">Bem-vindo ao Condado!</p>
+      <h2 class="modal-titulo">Como podemos te chamar?</h2>
+      <p class="modal-texto">Seu nome aparece junto das fotos que você enviar. Sem cadastro, prometemos.</p>
+      <input id="input-nome" type="text" autocomplete="given-name" autocapitalize="words" maxlength="30" placeholder="Seu primeiro nome" required>
+      <button type="submit" class="botao">Começar a jornada</button>
+    </form>
+  </div>
+
+  <div id="modal-parabens" class="modal" hidden>
+    <div class="modal-caixa parabens">
+      <div class="folhas" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <p class="sobretitulo">Missão cumprida</p>
+      <h2 class="modal-titulo">Parabéns, <span id="parabens-nome"></span>!</h2>
+      <p class="modal-texto">Você completou as 8 missões. Até no Condado uma aventura dessas vira história! Obrigado por registrar o nosso dia. 💚</p>
+      <a href="galeria.html" class="botao">Ver a galeria</a>
+      <button type="button" id="fechar-parabens" class="link">Voltar às missões</button>
+    </div>
+  </div>
+
+  <script src="config.js?v=1"></script>
+  <script src="upload.js?v=1"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>

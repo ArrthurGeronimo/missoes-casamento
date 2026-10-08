@@ -1,0 +1,213 @@
+/* Tema "Condado" — cores vêm do config.js (sobrescrevem estas). */
+:root {
+  --oliva: #6b7a45;
+  --oliva-escuro: #4a5631;
+  --folha: #8a9a5b;
+  --creme: #fbf8ef;
+  --pergaminho: #f3ecd9;
+  --dourado: #c2a35a;
+  --texto: #3d4128;
+  --erro: #a3402f;
+  --aviso: #8a6a1f;
+  --raio: 18px;
+  --sombra: 0 2px 10px rgba(74, 86, 49, .08), 0 1px 2px rgba(74, 86, 49, .06);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  line-height: 1.4;
+  color: var(--texto);
+  background-color: var(--creme);
+  background-image:
+    radial-gradient(circle at 100% 0, rgba(194, 163, 90, .12), transparent 40%),
+    radial-gradient(circle at 0 100%, rgba(138, 154, 91, .12), transparent 45%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+[hidden] { display: none !important; }
+
+/* ---------- Cabeçalho ---------- */
+.topo { text-align: center; padding: 28px 16px 8px; }
+.porta { width: 92px; height: 92px; color: var(--oliva); }
+.porta-madeira { fill: var(--oliva); }
+.porta-aro { stroke: var(--dourado); }
+.porta-macaneta { fill: var(--dourado); }
+.porta-folha { stroke: var(--folha); }
+.porta-folha-fill { fill: var(--folha); }
+.sobretitulo {
+  margin: 10px 0 0;
+  font-size: 14px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--oliva);
+  font-weight: 600;
+}
+.noivos {
+  font-family: "Pinyon Script", "Snell Roundhand", cursive;
+  font-weight: 400;
+  font-size: clamp(44px, 13vw, 64px);
+  line-height: 1.1;
+  color: var(--oliva-escuro);
+  margin: 4px 0 0;
+}
+.data { margin: 0; font-size: 17px; color: var(--oliva); font-style: italic; }
+.chamada { margin: 14px auto 0; max-width: 22em; font-size: 21px; font-weight: 600; }
+.saudacao { margin: 10px 0 0; font-size: 17px; }
+.link {
+  background: none; border: 0; padding: 4px; font: inherit; font-size: 15px;
+  color: var(--oliva); text-decoration: underline; cursor: pointer;
+}
+
+/* ---------- Progresso ---------- */
+main { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+.painel-progresso {
+  position: sticky; top: 0; z-index: 5;
+  background: rgba(251, 248, 239, .94);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  padding: 12px 0 14px; margin-bottom: 6px;
+}
+.contador { margin: 0 0 6px; text-align: center; font-size: 20px; font-weight: 700; color: var(--oliva-escuro); }
+.barra { height: 8px; background: rgba(107, 122, 69, .15); border-radius: 99px; overflow: hidden; }
+.barra-fill { height: 100%; width: 0; background: var(--oliva); border-radius: 99px; transition: width .3s ease; }
+.barra-geral { height: 10px; }
+.barra-geral .barra-fill { background: linear-gradient(90deg, var(--folha), var(--oliva)); }
+
+/* ---------- Cards ---------- */
+.missoes { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.card {
+  background: var(--pergaminho);
+  border: 1px solid rgba(194, 163, 90, .35);
+  border-radius: var(--raio);
+  padding: 16px;
+  box-shadow: var(--sombra);
+  transition: border-color .3s, background .3s;
+}
+.card.feito { background: #eef0df; border-color: rgba(107, 122, 69, .5); }
+.card-topo { display: flex; align-items: center; gap: 12px; }
+.card-num {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--creme); border: 1.5px solid var(--dourado);
+  font-weight: 700; color: var(--oliva-escuro); font-size: 17px;
+}
+.card.feito .card-num { background: var(--oliva); color: #fff; border-color: var(--oliva); }
+.card-titulo { flex: 1; margin: 0; font-size: 21px; font-weight: 700; line-height: 1.2; }
+.card-emoji { font-size: 24px; }
+.card-corpo { display: flex; gap: 12px; align-items: center; }
+.card-corpo:has(.card-thumb:not([hidden])), .card-corpo:has(.card-status:not(:empty)) { margin-top: 12px; }
+.card-thumb {
+  flex: none; width: 72px; height: 72px; border-radius: 12px; overflow: hidden;
+  background: var(--creme); border: 2px solid #fff; box-shadow: var(--sombra);
+  display: grid; place-items: center;
+}
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb-video { font-size: 30px; }
+.card-info { flex: 1; min-width: 0; }
+.card-status { margin: 0; font-size: 17px; }
+.card-status:empty { display: none; }
+.card-status.ok { color: var(--oliva-escuro); font-weight: 700; }
+.card-status.aviso { color: var(--aviso); font-weight: 600; }
+.card-status.erro { color: var(--erro); font-weight: 600; }
+.card-info .barra { margin-top: 6px; }
+
+/* ---------- Botões ---------- */
+.botao {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 50px; margin-top: 14px; padding: 10px 18px;
+  border: 0; border-radius: 99px;
+  background: var(--oliva); color: #fff;
+  font: inherit; font-size: 19px; font-weight: 700; letter-spacing: .02em;
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 2px 0 var(--oliva-escuro);
+  -webkit-tap-highlight-color: transparent;
+}
+.botao:active { transform: translateY(1px); box-shadow: none; }
+.card.feito .botao, .card.pendente .botao {
+  background: transparent; color: var(--oliva-escuro);
+  border: 1.5px solid var(--oliva); box-shadow: none; min-height: 44px; font-size: 17px;
+}
+.botao-secundario { background: var(--oliva-escuro); }
+.botao input[type=file] {
+  position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; font-size: 0;
+}
+.botao:focus-within { outline: 3px solid var(--dourado); outline-offset: 2px; }
+
+/* ---------- Momentos livres / galeria ---------- */
+.livres { margin-top: 14px; }
+.livres-desc { margin: 10px 0 0; font-size: 17px; }
+.livres .card-status { margin-top: 8px; }
+.galeria-link { text-align: center; margin: 26px 0 0; font-size: 19px; font-weight: 600; }
+.galeria-link a { color: var(--oliva-escuro); }
+.rodape {
+  text-align: center; padding: 28px 16px 8px;
+  font-family: "Pinyon Script", cursive; font-size: 26px; color: var(--oliva);
+}
+
+/* ---------- Banner de envio ---------- */
+.banner {
+  position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 20;
+  max-width: 536px; margin: 0 auto;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 14px;
+  background: var(--oliva-escuro); color: #fff;
+  font-size: 16px; font-weight: 600; line-height: 1.3;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+}
+.banner.offline { background: #7a5a16; }
+.banner span { flex: 1; }
+.banner-botao {
+  flex: none; border: 1.5px solid #fff; background: transparent; color: #fff;
+  border-radius: 99px; padding: 8px 12px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+}
+
+/* ---------- Modais ---------- */
+.modal {
+  position: fixed; inset: 0; z-index: 30;
+  display: grid; place-items: center; padding: 16px;
+  background: rgba(45, 52, 28, .55);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+}
+.modal-caixa {
+  position: relative; overflow: hidden;
+  width: 100%; max-width: 400px;
+  background: var(--creme); border-radius: 22px; padding: 26px 22px 20px;
+  text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+  border: 1px solid rgba(194, 163, 90, .5);
+}
+.modal-titulo { margin: 6px 0 8px; font-size: 28px; line-height: 1.15; color: var(--oliva-escuro); }
+.modal-texto { margin: 0 0 6px; font-size: 18px; }
+#input-nome {
+  width: 100%; margin-top: 14px; padding: 14px 16px;
+  font: inherit; font-size: 20px; text-align: center;
+  border: 1.5px solid var(--dourado); border-radius: 14px; background: #fff; color: var(--texto);
+}
+#input-nome:focus { outline: 3px solid rgba(107, 122, 69, .35); border-color: var(--oliva); }
+.parabens .modal-titulo { font-family: "Pinyon Script", cursive; font-weight: 400; font-size: 44px; }
+.parabens .link { margin-top: 10px; }
+
+/* Folhas caindo na tela de parabéns */
+.folhas { position: absolute; inset: 0; pointer-events: none; }
+.folhas i {
+  position: absolute; top: -20px; width: 14px; height: 22px;
+  background: var(--folha); border-radius: 0 100% 0 100%; opacity: .7;
+  animation: cair 4.5s linear infinite;
+}
+.folhas i:nth-child(1) { left: 6%;  animation-delay: 0s; }
+.folhas i:nth-child(2) { left: 20%; animation-delay: 1.4s; background: var(--dourado); }
+.folhas i:nth-child(3) { left: 34%; animation-delay: 2.6s; }
+.folhas i:nth-child(4) { left: 48%; animation-delay: .7s;  background: var(--oliva); }
+.folhas i:nth-child(5) { left: 62%; animation-delay: 3.2s; }
+.folhas i:nth-child(6) { left: 74%; animation-delay: 1.9s; background: var(--dourado); }
+.folhas i:nth-child(7) { left: 86%; animation-delay: .3s; }
+.folhas i:nth-child(8) { left: 94%; animation-delay: 2.2s; background: var(--oliva); }
+@keyframes cair {
+  0%   { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(520px) rotate(320deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .folhas { display: none; } }
