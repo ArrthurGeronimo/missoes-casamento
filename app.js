@@ -5,13 +5,6 @@
   var MC = window.MC;
   var $ = function (sel, el) { return (el || document).querySelector(sel); };
 
-  // ---------- Tema a partir do config ----------
-  var mapaCores = { oliva: "--oliva", olivaEscuro: "--oliva-escuro", folha: "--folha", creme: "--creme",
-    pergaminho: "--pergaminho", dourado: "--dourado", texto: "--texto" };
-  Object.keys(mapaCores).forEach(function (k) {
-    if (C.cores && C.cores[k]) document.documentElement.style.setProperty(mapaCores[k], C.cores[k]);
-  });
-
   // ---------- localStorage (sempre com try/catch: modo privado pode bloquear) ----------
   function ler(chave, padrao) {
     try { var v = localStorage.getItem(chave); return v ? JSON.parse(v) : padrao; } catch (_) { return padrao; }
@@ -27,11 +20,9 @@
   var thumbsLocais = {};                      // grupo -> objectURL da prévia
 
   // ---------- Cabeçalho ----------
-  $("#noivos").textContent = C.noivos;
-  $("#data").textContent = C.data;
   $("#chamada").textContent = C.chamada;
   $("#rodape-texto").textContent = C.rodape;
-  document.title = "Missões · " + C.noivos;
+  document.title = "Missões · " + window.NOIVOS_TEXTO;
 
   // ---------- Nome do convidado ----------
   var modalNome = $("#modal-nome");
@@ -126,7 +117,11 @@
     if (thumb.getAttribute("data-src") !== chave) {
       thumb.setAttribute("data-src", chave);
       thumb.innerHTML = video ? '<span class="thumb-video">🎬</span>' : "";
-      if (src) { var img = new Image(); img.alt = ""; img.src = src; thumb.appendChild(img); }
+      if (src) {
+        var img = new Image(); img.alt = "";
+        img.onerror = function () { thumb.innerHTML = '<span class="thumb-video">' + (video || (feito && feito.tipo === "video") ? "🎬" : "📷") + "</span>"; };
+        img.src = src; thumb.appendChild(img);
+      }
     }
     thumb.hidden = !chave;
 

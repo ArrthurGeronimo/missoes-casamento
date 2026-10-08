@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1">
+  <link rel="stylesheet" href="styles.css?v=2">
   <style>
     main { max-width: 1100px; }
     .filtros {
@@ -38,6 +38,7 @@
       background: linear-gradient(transparent, rgba(0,0,0,.55)); color: #fff;
       font-size: 14px; font-weight: 700; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .sem-thumb { display: grid; place-items: center; width: 100%; height: 100%; font-size: 40px; background: var(--oliva); }
     .foto .play {
       position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,.5); color: #fff;
       border-radius: 99px; padding: 2px 8px; font-size: 13px;
@@ -61,7 +62,7 @@
 <body>
   <header class="topo">
     <p class="sobretitulo">Galeria da festa</p>
-    <h1 id="noivos" class="noivos">Arthur &amp; Fernanda</h1>
+    <h1 id="noivos" class="noivos"></h1>
     <p id="data" class="data"></p>
     <p class="saudacao"><a href="./" class="link">← Voltar às missões</a></p>
   </header>
@@ -80,20 +81,15 @@
     </div>
   </div>
 
-  <script src="config.js?v=1"></script>
+  <script src="config.js?v=2"></script>
+  <script src="tema.js?v=2"></script>
   <script>
   (function () {
     "use strict";
     var C = window.CONFIG;
     var $ = function (s) { return document.querySelector(s); };
     var BASE = "https://res.cloudinary.com/" + C.cloudName + "/";
-    var mapaCores = { oliva: "--oliva", olivaEscuro: "--oliva-escuro", folha: "--folha", creme: "--creme",
-      pergaminho: "--pergaminho", dourado: "--dourado", texto: "--texto" };
-    Object.keys(mapaCores).forEach(function (k) {
-      if (C.cores && C.cores[k]) document.documentElement.style.setProperty(mapaCores[k], C.cores[k]);
-    });
-    $("#noivos").textContent = C.noivos;
-    $("#data").textContent = C.data;
+    document.title = "Galeria · " + window.NOIVOS_TEXTO;
 
     // Grupos na ordem das missões + "livres" no fim.
     var grupos = C.missoes.map(function (m, i) { return { id: m.id, titulo: (i + 1) + ". " + m.titulo }; });
@@ -173,7 +169,10 @@
         lista.forEach(function (it) {
           var b = document.createElement("button");
           b.className = "foto"; b.type = "button";
-          var img = new Image(); img.loading = "lazy"; img.alt = "Foto de " + (it.nome || "convidado"); img.src = thumb(it);
+          var img = new Image(); img.loading = "lazy"; img.alt = "Foto de " + (it.nome || "convidado");
+          // Vídeos > 40 MB não geram miniatura no plano grátis: mostra um ícone no lugar.
+          img.onerror = function () { b.removeChild(img); b.insertAdjacentHTML("afterbegin", '<span class="sem-thumb">🎬</span>'); };
+          img.src = thumb(it);
           b.appendChild(img);
           if (it.tipo === "video") { var pl = document.createElement("span"); pl.className = "play"; pl.textContent = "▶ vídeo"; b.appendChild(pl); }
           if (it.nome) { var q = document.createElement("span"); q.className = "quem"; q.textContent = it.nome; b.appendChild(q); }
@@ -192,8 +191,9 @@
         var v = document.createElement("video");
         v.controls = true; v.playsInline = true; v.preload = "metadata";
         v.poster = BASE + "video/upload/so_0,w_1000,q_auto/" + it.id + ".jpg";
-        // Primeiro tenta MP4 otimizado (toca em todo celular); se falhar, o arquivo original.
-        [BASE + "video/upload/q_auto,vc_auto/" + it.id + ".mp4", BASE + "video/upload/" + it.id + "." + it.formato]
+        // Primeiro o arquivo original (não gasta créditos de processamento de vídeo);
+        // se o navegador não tocar o formato, tenta um MP4 convertido (só funciona até 40 MB no plano grátis).
+        [BASE + "video/upload/" + it.id + "." + it.formato, BASE + "video/upload/q_auto,vc_auto/" + it.id + ".mp4"]
           .forEach(function (src) { var s = document.createElement("source"); s.src = src; v.appendChild(s); });
         m.appendChild(v);
         $("#lightbox-baixar").href = BASE + "video/upload/fl_attachment/" + it.id + "." + it.formato;

@@ -4,7 +4,7 @@
 // =============================================================
 window.CONFIG = {
   // ---- Noivos e textos ----
-  noivos: "Arthur & Fernanda",
+  noivos: ["Arthur", "Fernanda"],   // a ordem aqui é a ordem na tela
   data: "09 de outubro de 2026",
   chamada: "Você consegue capturar todos esses momentos?",
   rodape: "Feito com amor no Condado",

@@ -55,6 +55,12 @@ body {
   color: var(--oliva-escuro);
   margin: 4px 0 0;
 }
+.noivos-nome { display: block; }
+.noivos-e {
+  display: block; margin: -.05em 0 -.1em;
+  font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-weight: 500;
+  font-size: .45em; line-height: 1; color: var(--oliva);
+}
 .data { margin: 0; font-size: 17px; color: var(--oliva); font-style: italic; }
 .chamada { margin: 14px auto 0; max-width: 22em; font-size: 21px; font-weight: 600; }
 .saudacao { margin: 10px 0 0; font-size: 17px; }
